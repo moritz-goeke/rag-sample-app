@@ -25,6 +25,8 @@ The **RAG Sample App** is a chat-based application that allows users to ask ques
 
 ## Architecture
 
+![RAG drawio](https://github.com/user-attachments/assets/a41dc472-32ab-4664-841a-054b9e843faa)
+
 The application is built using the following Azure services:
 
 - **Azure Static Web Apps**: Hosts the frontend, providing an interactive chat interface for users.
