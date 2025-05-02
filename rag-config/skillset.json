@@ -1,0 +1,55 @@
+{
+  "name": "skillset1",
+  "description": "",
+  "skills": [
+    {
+      "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+      "name": "#1",
+      "description": "",
+      "context": "/document/normalized_images/*",
+      "inputs": [
+        {
+          "name": "image",
+          "source": "/document/normalized_images/*",
+          "inputs": []
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text",
+          "targetName": "text"
+        }
+      ],
+      "defaultLanguageCode": "en",
+      "detectOrientation": true,
+      "lineEnding": "Space"
+    }
+  ],
+  "@odata.etag": "\"0x8DCFB1DC59EC9ED\"",
+  "indexProjections": {
+    "selectors": [
+      {
+        "targetIndexName": "index1",
+        "parentKeyFieldName": "parent_id",
+        "sourceContext": "/document/normalized_images/*",
+        "mappings": [
+          {
+            "name": "text",
+            "source": "/document/normalized_images/*/text"
+          },
+          {
+            "name": "pageNumber",
+            "source": "/document/normalized_images/*/pageNumber"
+          },
+          {
+            "name": "metadata_storage_path",
+            "source": "/document/metadata_storage_name"
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "projectionMode": "skipIndexingParentDocuments"
+    }
+  }
+}

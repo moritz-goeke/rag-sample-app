@@ -1,0 +1,236 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.35.1.17967",
+      "templateHash": "5938276971173763966"
+    }
+  },
+  "parameters": {
+    "staticSites_rag_sample_app_swa_name": {
+      "type": "string",
+      "defaultValue": "rag-sample-swa"
+    },
+    "storageAccounts_rag_aisearch_docs_storage_name": {
+      "type": "string",
+      "defaultValue": "ragaisearchdocsstorage"
+    },
+    "sites_rag_backend_functions_name": {
+      "type": "string",
+      "defaultValue": "rag-backend-functions"
+    },
+    "storageAccounts_rag_functions_storage_name": {
+      "type": "string",
+      "defaultValue": "ragfunctionsstorage"
+    },
+    "serverfarms_rag_asp_name": {
+      "type": "string",
+      "defaultValue": "asp-rag-sample"
+    },
+    "searchServices_rag_ai_search_name": {
+      "type": "string",
+      "defaultValue": "rag-aisearch"
+    },
+    "accounts_rag_openai_name": {
+      "type": "string",
+      "defaultValue": "rag-openai"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2024-10-01",
+      "name": "[parameters('accounts_rag_openai_name')]",
+      "location": "westeurope",
+      "sku": {
+        "name": "S0"
+      },
+      "kind": "OpenAI",
+      "properties": {
+        "apiProperties": {},
+        "customSubDomainName": "[parameters('accounts_rag_openai_name')]",
+        "networkAcls": {
+          "defaultAction": "Allow",
+          "virtualNetworkRules": [],
+          "ipRules": []
+        },
+        "publicNetworkAccess": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Search/searchServices",
+      "apiVersion": "2025-02-01-preview",
+      "name": "[parameters('searchServices_rag_ai_search_name')]",
+      "location": "West Europe",
+      "tags": {
+        "ProjectType": "aoai-your-data-service"
+      },
+      "sku": {
+        "name": "basic"
+      },
+      "properties": {
+        "replicaCount": 1,
+        "partitionCount": 1,
+        "endpoint": "[format('https://{0}.search.windows.net', parameters('searchServices_rag_ai_search_name'))]",
+        "hostingMode": "default",
+        "publicNetworkAccess": "Enabled",
+        "networkRuleSet": {
+          "ipRules": [],
+          "bypass": "None"
+        },
+        "encryptionWithCmk": {
+          "enforcement": "Unspecified"
+        },
+        "disableLocalAuth": false,
+        "authOptions": {
+          "apiKeyOnly": {}
+        },
+        "disabledDataExfiltrationOptions": [],
+        "semanticSearch": "standard"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2024-01-01",
+      "name": "[parameters('storageAccounts_rag_aisearch_docs_storage_name')]",
+      "location": "westeurope",
+      "sku": {
+        "name": "Standard_ZRS",
+        "tier": "Standard"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "dnsEndpointType": "Standard",
+        "defaultToOAuthAuthentication": false,
+        "publicNetworkAccess": "Enabled",
+        "allowCrossTenantReplication": false,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": false,
+        "allowSharedKeyAccess": true,
+        "largeFileSharesState": "Enabled",
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "requireInfrastructureEncryption": false,
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2024-01-01",
+      "name": "[parameters('storageAccounts_rag_functions_storage_name')]",
+      "location": "westeurope",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "Storage",
+      "properties": {
+        "defaultToOAuthAuthentication": true,
+        "publicNetworkAccess": "Enabled",
+        "allowCrossTenantReplication": false,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": false,
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2024-04-01",
+      "name": "[parameters('serverfarms_rag_asp_name')]",
+      "location": "West Europe",
+      "sku": {
+        "name": "Y1",
+        "tier": "Dynamic",
+        "size": "Y1",
+        "family": "Y",
+        "capacity": 0
+      },
+      "kind": "functionapp",
+      "properties": {
+        "perSiteScaling": false,
+        "elasticScaleEnabled": false,
+        "maximumElasticWorkerCount": 1,
+        "isSpot": false,
+        "reserved": false,
+        "isXenon": false,
+        "hyperV": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0,
+        "zoneRedundant": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/staticSites",
+      "apiVersion": "2024-04-01",
+      "name": "[parameters('staticSites_rag_sample_app_swa_name')]",
+      "location": "West Europe",
+      "sku": {
+        "name": "Standard",
+        "tier": "Standard"
+      },
+      "properties": {
+        "repositoryUrl": "https://github.com/moritz-goeke/rag-azure-sample",
+        "branch": "main",
+        "stagingEnvironmentPolicy": "Enabled",
+        "allowConfigFileUpdates": true,
+        "provider": "GitHub",
+        "enterpriseGradeCdnStatus": "Disabled"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2024-04-01",
+      "name": "[parameters('sites_rag_backend_functions_name')]",
+      "location": "West Europe",
+      "kind": "functionapp",
+      "properties": {
+        "enabled": true,
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_rag_asp_name'))]",
+        "httpsOnly": true,
+        "publicNetworkAccess": "Enabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_rag_asp_name'))]"
+      ]
+    }
+  ]
+}

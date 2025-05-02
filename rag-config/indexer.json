@@ -1,0 +1,34 @@
+{
+  "@odata.context": "https://chatbot-wirtschaftshilfen-aisearch.search.windows.net/$metadata#indexers/$entity",
+  "@odata.etag": "\"0x8DD8849701F0EE0\"",
+  "name": "azureblob-indexer",
+  "description": "",
+  "dataSourceName": "<azureblob-datasource>",
+  "skillsetName": "skillset1",
+  "targetIndexName": "desidx",
+  "disabled": null,
+  "schedule": null,
+  "parameters": {
+    "batchSize": null,
+    "maxFailedItems": 0,
+    "maxFailedItemsPerBatch": 0,
+    "configuration": {
+      "dataToExtract": "contentAndMetadata",
+      "parsingMode": "default",
+      "imageAction": "generateNormalizedImagePerPage"
+    }
+  },
+  "fieldMappings": [
+    {
+      "sourceFieldName": "metadata_storage_path",
+      "targetFieldName": "metadata_storage_path",
+      "mappingFunction": {
+        "name": "base64Encode",
+        "parameters": null
+      }
+    }
+  ],
+  "outputFieldMappings": [],
+  "cache": null,
+  "encryptionKey": null
+}
