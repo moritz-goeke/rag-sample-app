@@ -1,11 +1,9 @@
 {
-  "@odata.context": "https://chatbot-wirtschaftshilfen-aisearch.search.windows.net/$metadata#indexers/$entity",
-  "@odata.etag": "\"0x8DD8849701F0EE0\"",
   "name": "azureblob-indexer",
   "description": "",
   "dataSourceName": "<azureblob-datasource>",
   "skillsetName": "skillset1",
-  "targetIndexName": "desidx",
+  "targetIndexName": "index1",
   "disabled": null,
   "schedule": null,
   "parameters": {
