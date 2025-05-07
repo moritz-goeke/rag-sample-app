@@ -124,15 +124,17 @@ The application is built using the following Azure services:
    - **Index**: Define the structure of the searchable data.
    - **Skillset**: Enrich the data during indexing with AI-powered capabilities.
    - **Indexer**: Automate the process of importing data into the index.
-     To ensure the indexer functions correctly, update the `"dataSourceName"` field in the indexer configuration file to match the name of your Azure Blob Storage data source. For example:
+
+   I strongly recommend to use the **[Import Data Wizard](https://learn.microsoft.com/en-us/azure/search/search-import-data-portal)** to import and index your data (also optionally with vectorization). After completing the wizard, the resources above will be created automatically according to your settings.
+
+   Else, very basic sample JSON configuration files for these components are located in the `rag-config` folder. Use the Azure Portal to create and configure them. Finally, run the indexer to populate the index.
+   To ensure the indexer functions correctly, update the `"dataSourceName"` field in the indexer configuration file to match the name of your Azure Blob Storage data source. For example:
 
    ```json
    "dataSourceName": "<azureblob-datasource>"
    ```
 
    Replace `<azureblob-datasource>` with the actual name of your data source in Azure Blob Storage.
-
-   The JSON configuration files for these components are located in the `rag-config` folder. Use the Azure Portal to create and configure them. Finally, run the indexer to populate the index.
 
 ---
 
