@@ -66,7 +66,7 @@ The application is built using the following Azure services:
 
 ### Prerequisites
 
-- **Node.js** (v16 or later)
+- **Node.js** (v18 or later)
 - **Azure CLI**
 - **Azure Functions Core Tools**
 - **Git**
