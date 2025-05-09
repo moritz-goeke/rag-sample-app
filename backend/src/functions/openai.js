@@ -9,6 +9,7 @@ const apiKey = process.env["AZURE_OPENAI_KEY"];
 const searchApiEndpoint = process.env["AZURE_AISEARCH_ENDPOINT"];
 const searchApiKey = process.env["AZURE_AISEARCH_KEY"];
 const indexName = process.env["AZURE_AISEARCH_INDEX_NAME"];
+const deployedModelName = process.env["AZURE_OPENAI_DEPLOYED_MODEL_NAME"];
 const apiVersion = "2024-10-01-preview";
 
 app.http("openai", {
@@ -18,8 +19,6 @@ app.http("openai", {
     try {
       const requestMessage = request.params.message;
       const requestConversation = JSON.parse(request.params.conversation);
-      const requestConfig = JSON.parse(request.params.config);
-      const deployment = request?.params?.model || "gpt-4o";
 
       let messageArray = requestConversation
         .map((x) => ({
@@ -32,10 +31,10 @@ app.http("openai", {
       let completionObject = {
         messages: messageArray,
         max_tokens: 4096,
-        temperature: parseFloat(requestConfig?.temperature) || 0.7,
-        top_p: parseFloat(requestConfig?.top_p || 0.95),
-        frequency_penalty: parseFloat(requestConfig?.frequency_penalty) || 0,
-        presence_penalty: parseFloat(requestConfig?.presence_penalty) || 0,
+        temperature: 0.7,
+        top_p: 0.95,
+        frequency_penalty: 0,
+        presence_penalty: 0,
         stop: null,
         data_sources: [
           {
@@ -57,7 +56,7 @@ app.http("openai", {
         endpoint,
         apiKey,
         apiVersion,
-        deployment,
+        deployedModelName,
       });
       const result = await client.chat.completions.create(completionObject);
 

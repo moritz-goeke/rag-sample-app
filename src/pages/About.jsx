@@ -18,7 +18,6 @@ export default function About() {
     >
       <Box
         sx={{
-          width: 1,
           display: "flex",
           flexDirection: "column",
           width: 700,

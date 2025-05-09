@@ -23,35 +23,14 @@ import {
 import Typewriter from "../components/Typewriter";
 
 export default function Chat() {
-  const testData = [
-    { message: "Hallo from gpt2!", from: "gpt", timestamp: Date.now() },
-    { message: "Hallo from user2!", from: "user", timestamp: Date.now() },
-    { message: "Hallo from gpt!", from: "gpt", timestamp: Date.now() },
-    { message: "Hallo from user!", from: "user", timestamp: Date.now() },
-  ];
-
   const [inputText, setInputText] = React.useState("");
 
   const [chatArray, setChatArray] = React.useState([]);
-  // const [chatArray, setChatArray] = React.useState(testData);
 
   const [loadingAnswer, setLoadingAnswer] = React.useState(false);
 
   const [skipAnimation, setSkipAnimation] = React.useState(false);
   const [writing, setWriting] = React.useState(false);
-
-  const defaultSettings = {
-    temperature: 0.7,
-    top_p: 0.95,
-    frequency_penalty: 0,
-    presence_penalty: 0,
-    system_prompt: "",
-    reasoningEffort: "medium",
-  };
-
-  const [currentContext, setCurrentContext] = React.useState("");
-
-  const [settings, setSettings] = React.useState(defaultSettings);
 
   async function sendMessage(chatMessage, clearInputField) {
     if (chatMessage === "") return;
@@ -71,8 +50,6 @@ export default function Chat() {
         {
           message: chatMessage,
           conversation: JSON.stringify(chatArray.slice(0, 10)),
-          config: JSON.stringify(settings),
-          // model: "",
         },
         {
           headers: {
@@ -81,7 +58,6 @@ export default function Chat() {
         }
       );
       setLoadingAnswer(false);
-      setCurrentContext(res.data.choices[0].message?.context);
       setChatArray((prev) => [
         {
           message: res.data.choices[0].message.content

@@ -8,7 +8,7 @@ const searchApiEndpoint = process.env["AZURE_AISEARCH_ENDPOINT"];
 const searchApiKey = process.env["AZURE_AISEARCH_KEY"];
 const searchIndex = process.env["AZURE_AISEARCH_INDEX"];
 
-// This function is used to search the Azure AI Search index using the Azure Search client
+// This function can be used to search the Azure AI Search index using the Azure Search client
 // In this project, it has no connection to the frontend yet
 
 app.http("aiSearch", {

@@ -103,20 +103,35 @@ The application is built using the following Azure services:
    az deployment group create --resource-group <your-resource-group> --template-file azuredeploy.bicep
    ```
 
-5. **Deploy Azure Function Code**:
+5. **Deploy Frontend Code**:
 
-   - Navigate to the `backend` folder and deploy the Azure Function code to your Function App:
+   Navigate to the `frontend` folder and deploy the frontend code to your Azure Static Web App:
 
-     ```bash
-     cd backend
-     func azure functionapp publish <your-function-app-name>
-     ```
+   ```bash
+   az staticwebapp upload --name <your-static-web-app-name> --source ./frontend
+   ```
 
-   - Ensure the Function App is connected to the Static Web App as `api/backend`.
+   Replace `<your-static-web-app-name>` with the name of your Azure Static Web App.
 
-   - Set all required environment variables in the Azure Function App. You can configure these in the Azure Portal under the "Configuration" section of your Function App.
+6. **Set Up Azure OpenAI Deployment**:
 
-6. **Configure Azure AI Search**:
+   - In the Azure Portal, navigate to your Azure OpenAI resource.
+   - Create a new deployment with a model of your choice (e.g., `gpt-4o`).
+   - Note the deployment name, as it will be required for configuring the backend to interact with the OpenAI service.
+
+7. **Deploy Azure Function Code**:
+
+   Navigate to the `backend` folder and deploy the Azure Function code to your Function App:
+
+   ```bash
+   cd backend
+   func azure functionapp publish <your-function-app-name>
+   ```
+
+   Ensure the Function App is connected to the Static Web App as `api/backend`.  
+   Set all required environment variables in the Azure Function App. You can configure these in the Azure Portal under the "Configuration" section of your Function App.
+
+8. **Configure Azure AI Search**:
 
    To use Azure AI Search, set up the following components:
 
@@ -125,9 +140,9 @@ The application is built using the following Azure services:
    - **Skillset**: Enrich the data during indexing with AI-powered capabilities.
    - **Indexer**: Automate the process of importing data into the index.
 
-   I strongly recommend to use the **[Import Data Wizard](https://learn.microsoft.com/en-us/azure/search/search-import-data-portal)** to import and index your data (also optionally with vectorization). After completing the wizard, the resources above will be created automatically according to your settings.
+   Use the **[Import Data Wizard](https://learn.microsoft.com/en-us/azure/search/search-import-data-portal)** to import and index your data (optionally with vectorization). After completing the wizard, the resources above will be created automatically according to your settings.
 
-   Else, very basic sample JSON configuration files for these components are located in the `rag-config` folder. Use the Azure Portal to create and configure them. Finally, run the indexer to populate the index.
+   Alternatively, basic sample JSON configuration files for these components are located in the `rag-config` folder. Use the Azure Portal to create and configure them. Finally, run the indexer to populate the index.  
    To ensure the indexer functions correctly, update the `"dataSourceName"` field in the indexer configuration file to match the name of your Azure Blob Storage data source. For example:
 
    ```json
@@ -183,22 +198,18 @@ rag-sample-app/
 1. The generated answer is sent back to the frontend.
 2. The chat interface displays the answer to the user.
 
+---
+
 ## Important Notes on Production Deployment
 
 This template is designed primarily for development and as a baseline for building your application. Before deploying to a production environment, consider the following improvements to enhance security and reliability:
 
 1. **Use Managed Identities**: Replace hardcoded credentials with Azure Managed Identities to securely access Azure resources without storing secrets in your code.
-
 2. **Leverage Azure Key Vault**: Store sensitive information such as API keys, connection strings, and other secrets in Azure Key Vault. Update your application to retrieve these secrets securely at runtime.
-
 3. **Review and Update Configuration Settings**: Ensure that settings such as CORS policies, authentication mechanisms, and logging levels are configured appropriately for production.
-
 4. **Enable Network Security**: Use Virtual Networks (VNets), private endpoints, and firewalls to restrict access to your Azure resources.
-
 5. **Monitor and Scale**: Implement Azure Monitor and Application Insights for observability. Configure autoscaling rules to handle varying workloads efficiently.
-
 6. **Harden Azure Functions**: Restrict access to your Azure Functions using IP restrictions and enable authentication with Azure Active Directory (AAD).
-
 7. **Audit and Compliance**: Regularly review your deployment for compliance with organizational and regulatory requirements.
 
 By addressing these considerations, you can ensure that your application is secure, scalable, and ready for production use.
