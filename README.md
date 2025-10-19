@@ -13,7 +13,8 @@ This project demonstrates a **Retrieval-Augmented Generation (RAG)** architectur
 5. [Setup and Deployment](#setup-and-deployment)
 6. [Folder Structure](#folder-structure)
 7. [How It Works](#how-it-works)
-8. [Contributing](#contributing)
+8. [Local Development](#local-development)
+9. [Environment Variables](#environment-variables)
 
 ---
 
@@ -42,7 +43,7 @@ The application is built using the following Azure services:
 - **Document Retrieval**: Retrieves relevant passages from internal documents using Azure AI Search.
 - **Contextual Answer Generation**: Combines user queries with retrieved content to generate precise answers.
 - **Scalable and Serverless**: Built on Azure's serverless infrastructure for scalability and cost-efficiency.
-- **Customizable Settings**: Allows fine-tuning of AI model parameters like temperature and top-p.
+- **Customizable Settings**: Allows fine-tuning of AI model parameters like temperature and top_p.
 
 ---
 
@@ -51,7 +52,7 @@ The application is built using the following Azure services:
 ### Frontend
 
 - **React**: For building the user interface.
-- **Material-UI**: For styling and components.
+- **MUI**: For styling and components.
 - **Vite**: For fast development and build tooling.
 
 ### Backend
@@ -73,42 +74,37 @@ The application is built using the following Azure services:
 
 ### Steps
 
-1. **Clone the Repository**:
+1. **Clone the repository**
 
-   ```bash
-   git clone https://github.com/moritz-goeke/rag-azure-sample.git
+   ```powershell
+   git clone https://github.com/moritz-goeke/rag-sample-app.git
    cd rag-sample-app
    ```
 
-2. **Install Dependencies**:
+2. **Install dependencies**
 
-   ```bash
+   ```powershell
    npm install
    ```
 
-3. **Run the Frontend Locally**:
-
-   Navigate to the frontend folder and start the development server:
-
-   ```bash
-   cd frontend
-   npm run dev
-   ```
+3. (Optional) Proceed to [Local Development](#local-development) to run the app locally with the Functions backend.
 
 4. **Deploy to Azure**:
 
-   Use the provided Bicep/ARM templates to deploy the required Azure resources:
+   Use the provided Bicep template to deploy the required Azure resources:
 
-   ```bash
-   az deployment group create --resource-group <your-resource-group> --template-file azuredeploy.bicep
+   ```powershell
+   az group create --name <your-resource-group> --location <region>
+   az deployment group create --resource-group <your-resource-group> --template-file .\arm-template\main.bicep
    ```
 
-5. **Deploy Frontend Code**:
+5. **Deploy frontend code**
 
-   Navigate to the `frontend` folder and deploy the frontend code to your Azure Static Web App:
+   Build the frontend (generated into `dist/`) and upload it to your Azure Static Web App, or configure CI (recommended):
 
-   ```bash
-   az staticwebapp upload --name <your-static-web-app-name> --source ./frontend
+   ```powershell
+   npm run build
+   az staticwebapp upload --name <your-static-web-app-name> --source .\dist
    ```
 
    Replace `<your-static-web-app-name>` with the name of your Azure Static Web App.
@@ -119,17 +115,18 @@ The application is built using the following Azure services:
    - Create a new deployment with a model of your choice (e.g., `gpt-4o`).
    - Note the deployment name, as it will be required for configuring the backend to interact with the OpenAI service.
 
-7. **Deploy Azure Function Code**:
+7. **Deploy Azure Functions code**
 
    Navigate to the `backend` folder and deploy the Azure Function code to your Function App:
 
-   ```bash
+   ```powershell
    cd backend
    func azure functionapp publish <your-function-app-name>
    ```
 
-   Ensure the Function App is connected to the Static Web App as `api/backend`.  
-   Set all required environment variables in the Azure Function App. You can configure these in the Azure Portal under the "Configuration" section of your Function App.
+   After deployment, open your Static Web App in the Azure portal → Backend → Link an existing Function App, and select your Function App. This enables routing for `/api/*`.
+
+   Set all required environment variables in the Function App (Azure portal → Function App → Configuration). See [Environment Variables](#environment-variables).
 
 8. **Configure Azure AI Search**:
 
@@ -142,7 +139,7 @@ The application is built using the following Azure services:
 
    Use the **[Import Data Wizard](https://learn.microsoft.com/en-us/azure/search/search-import-data-portal)** to import and index your data (optionally with vectorization). After completing the wizard, the resources above will be created automatically according to your settings.
 
-   Alternatively, basic sample JSON configuration files for these components are located in the `rag-config` folder. Use the Azure Portal to create and configure them. Finally, run the indexer to populate the index.  
+   Alternatively, basic sample JSON configuration files for these components are located in the `rag-config` folder. Use the Azure Portal to create and configure them. Finally, run the indexer to populate the index.
    To ensure the indexer functions correctly, update the `"dataSourceName"` field in the indexer configuration file to match the name of your Azure Blob Storage data source. For example:
 
    ```json
@@ -162,10 +159,10 @@ rag-sample-app/
 │   ├── pages/               # Application pages (Chat, About)
 │   ├── assets/              # Static assets (images, logos)
 │   └── index.css            # Global styles
-├── backend/                 # Backend source code
-│   ├── src/                 # Azure Functions
+├── backend/                 # Backend source code (Azure Functions)
+│   ├── src/                 # Function handlers
 │   ├── host.json            # Azure Functions host configuration
-│   └── local.settings.json  # Local environment variables
+│   └── local.settings.sample.json  # Sample for local environment variables
 ├── arm-template/            # Azure resource deployment templates
 ├── staticwebapp.config.json # Static Web App configuration
 ├── package.json             # Frontend dependencies and scripts
@@ -200,6 +197,58 @@ rag-sample-app/
 
 ---
 
+## Local Development
+
+You can run the frontend and Functions backend locally:
+
+1. Create `backend/local.settings.json` from the provided sample and fill in your values (see [Environment Variables](#environment-variables)). Do not commit this file.
+2. Start the Functions backend:
+   ```powershell
+   cd backend
+   func start
+   ```
+3. Start the frontend in a second terminal at the repo root:
+   ```powershell
+   npm run dev
+   ```
+
+The dev server proxies requests from `/api/*` to `http://localhost:7071`.
+
+Alternatively, you can use Azure Static Web Apps CLI to run both:
+
+```powershell
+swa start http://localhost:5173 --api http://localhost:7071
+```
+
+## Environment Variables
+
+Set the following environment variables in your Function App configuration and in `backend/local.settings.json` for local runs:
+
+- `AZURE_OPENAI_ENDPOINT`
+- `AZURE_OPENAI_KEY`
+- `AZURE_OPENAI_DEPLOYED_MODEL_NAME`
+- `AZURE_AISEARCH_ENDPOINT`
+- `AZURE_AISEARCH_KEY`
+- `AZURE_AISEARCH_INDEX_NAME`
+
+Sample `backend/local.settings.json` (do not commit):
+
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AZURE_OPENAI_ENDPOINT": "https://<your-aoai>.openai.azure.com/",
+    "AZURE_OPENAI_KEY": "<key>",
+    "AZURE_OPENAI_DEPLOYED_MODEL_NAME": "<deploymentName>",
+    "AZURE_AISEARCH_ENDPOINT": "https://<your-search>.search.windows.net",
+    "AZURE_AISEARCH_KEY": "<key>",
+    "AZURE_AISEARCH_INDEX_NAME": "<indexName>"
+  }
+}
+```
+
 ## Important Notes on Production Deployment
 
 This template is designed primarily for development and as a baseline for building your application. Before deploying to a production environment, consider the following improvements to enhance security and reliability:
@@ -209,7 +258,7 @@ This template is designed primarily for development and as a baseline for buildi
 3. **Review and Update Configuration Settings**: Ensure that settings such as CORS policies, authentication mechanisms, and logging levels are configured appropriately for production.
 4. **Enable Network Security**: Use Virtual Networks (VNets), private endpoints, and firewalls to restrict access to your Azure resources.
 5. **Monitor and Scale**: Implement Azure Monitor and Application Insights for observability. Configure autoscaling rules to handle varying workloads efficiently.
-6. **Harden Azure Functions**: Restrict access to your Azure Functions using IP restrictions and enable authentication with Azure Active Directory (AAD).
+6. **Harden Azure Functions**: Restrict access to your Azure Functions using IP restrictions and enable authentication with Microsoft Entra ID.
 7. **Audit and Compliance**: Regularly review your deployment for compliance with organizational and regulatory requirements.
 
 By addressing these considerations, you can ensure that your application is secure, scalable, and ready for production use.

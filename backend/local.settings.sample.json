@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AZURE_OPENAI_ENDPOINT": "https://<your-aoai>.openai.azure.com/",
+    "AZURE_OPENAI_KEY": "<key>",
+    "AZURE_OPENAI_DEPLOYED_MODEL_NAME": "<deploymentName>",
+    "AZURE_AISEARCH_ENDPOINT": "https://<your-search>.search.windows.net",
+    "AZURE_AISEARCH_KEY": "<key>",
+    "AZURE_AISEARCH_INDEX_NAME": "<indexName>"
+  }
+}
